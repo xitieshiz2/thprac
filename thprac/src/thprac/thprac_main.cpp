@@ -1,9 +1,6 @@
 ﻿#include "thprac_main.h"
 #include "thprac_games.h"
 #include "thprac_gui_locale.h"
-#include "thprac_launcher_wnd.h"
-#include "thprac_launcher_games.h"
-#include "thprac_launcher_cfg.h"
 #include "thprac_load_exe.h"
 #include "thprac_utils.h"
 #include "utils/wininternal.h"
@@ -55,7 +52,7 @@ int MsgBoxWnd(const char* title, const char* text, int flag)
 {
     auto titleU16 = utf8_to_utf16(title);
     auto textU16 = utf8_to_utf16(text);
-    return LauncherWndMsgBox(titleU16.c_str(), textU16.c_str(), flag);
+    return MessageBoxW(NULL, textU16.c_str(), titleU16.c_str(), flag);
 }
 
 bool PromptUser(thprac_prompt_t info, THGameSig* gameSig = nullptr)

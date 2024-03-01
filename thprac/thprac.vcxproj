@@ -47,7 +47,9 @@
     <ClInclude Include="src\3rdParties\MinHook\src\hde\table32.h" />
     <ClInclude Include="src\3rdParties\MinHook\src\hde\table64.h" />
     <ClInclude Include="src\3rdParties\MinHook\src\trampoline.h" />
+    <ClInclude Include="src\thprac\thprac_cfg.h" />
     <ClInclude Include="src\thprac\thprac_games.h" />
+    <ClInclude Include="src\thprac\thprac_games_def.h" />
     <ClInclude Include="src\thprac\thprac_game_data.h" />
     <ClInclude Include="src\thprac\thprac_gui_impl_dx8.h" />
     <ClInclude Include="src\thprac\thprac_gui_components.h" />
@@ -56,14 +58,6 @@
     <ClInclude Include="src\thprac\thprac_gui_impl_win32.h" />
     <ClInclude Include="src\thprac\thprac_init.h" />
     <ClInclude Include="src\thprac\thprac_gui_input.h" />
-    <ClInclude Include="src\thprac\thprac_launcher_cfg.h" />
-    <ClInclude Include="src\thprac\thprac_launcher_games.h" />
-    <ClInclude Include="src\thprac\thprac_launcher_games_def.h" />
-    <ClInclude Include="src\thprac\thprac_launcher_links.h" />
-    <ClInclude Include="src\thprac\thprac_launcher_main.h" />
-    <ClInclude Include="src\thprac\thprac_launcher_tools.h" />
-    <ClInclude Include="src\thprac\thprac_launcher_utils.h" />
-    <ClInclude Include="src\thprac\thprac_launcher_wnd.h" />
     <ClInclude Include="src\thprac\thprac_licence.h" />
     <ClInclude Include="src\thprac\thprac_load_exe.h" />
     <ClInclude Include="src\thprac\thprac_gui_locale.h" />
@@ -101,7 +95,9 @@
     <ClCompile Include="src\3rdParties\MinHook\src\trampoline_new.c" />
     <ClCompile Include="src\thprac\main.cpp" />
     <ClCompile Include="src\thprac\thprac_alcostg.cpp" />
+    <ClCompile Include="src\thprac\thprac_cfg.cpp" />
     <ClCompile Include="src\thprac\thprac_games.cpp" />
+    <ClCompile Include="src\thprac\thprac_games_def.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_impl_dx8.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_components.cpp" />
     <ClCompile Include="src\thprac\thprac_hook.cpp" />
@@ -109,13 +105,6 @@
     <ClCompile Include="src\thprac\thprac_gui_impl_win32.cpp" />
     <ClCompile Include="src\thprac\thprac_init.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_input.cpp" />
-    <ClCompile Include="src\thprac\thprac_launcher_cfg.cpp" />
-    <ClCompile Include="src\thprac\thprac_launcher_games.cpp" />
-    <ClCompile Include="src\thprac\thprac_launcher_links.cpp" />
-    <ClCompile Include="src\thprac\thprac_launcher_main.cpp" />
-    <ClCompile Include="src\thprac\thprac_launcher_tools.cpp" />
-    <ClCompile Include="src\thprac\thprac_launcher_utils.cpp" />
-    <ClCompile Include="src\thprac\thprac_launcher_wnd.cpp" />
     <ClCompile Include="src\thprac\thprac_licence.cpp" />
     <ClCompile Include="src\thprac\thprac_load_exe.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_locale.cpp" />
@@ -202,7 +191,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <FixedBaseAddress>false</FixedBaseAddress>
-      <AdditionalDependencies>kernel32.lib;ntdll.lib;user32.lib;freetype.lib;gdi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;ntdll.lib;user32.lib;advapi32.lib;shell32.lib;comdlg32.lib;gdi32.lib;freetype.lib</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <GenerateDebugInformation>true</GenerateDebugInformation>

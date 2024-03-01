@@ -1,10 +1,9 @@
 #include "thprac_games.h"
-#include "thprac_launcher_cfg.h"
-#include "thprac_launcher_main.h"
 #include "thprac_licence.h"
 #include "thprac_gui_impl_dx8.h"
 #include "thprac_gui_impl_dx9.h"
 #include "thprac_utils.h"
+#include "thprac_cfg.h"
 #include "../3rdParties/d3d8/include/d3d8.h"
 #include <metrohash128.h>
 
@@ -26,9 +25,6 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
     g_gameGuiDevice = (DWORD*)device;
     g_gameGuiHwnd = (DWORD*)hwnd;
     g_gameIMCCtx = ImmAssociateContext(*(HWND*)hwnd, 0);
-
-    // Set Locale
-    GuiLauncherLocaleInit();
 
     switch (impl) {
     case THPrac::IMPL_WIN32_DX8:
@@ -91,31 +87,19 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
         }
         Gui::LocaleCreateFont(io.DisplaySize.x * 0.025f);
     }
-
-    if (LauncherCfgInit(true)) {
-        bool resizable_window;
-        if (LauncherSettingGet("resizable_window", resizable_window) && resizable_window && !Gui::ImplWin32CheckFullScreen()) {
-            RECT wndRect;
-            GetClientRect(*(HWND*)hwnd, &wndRect);
-            auto frameSize = GetSystemMetrics(SM_CXSIZEFRAME) * 2;
-            auto captionSize = GetSystemMetrics(SM_CYCAPTION);
-            auto longPtr = GetWindowLongW(*(HWND*)hwnd, GWL_STYLE);
-            SetWindowLongW(*(HWND*)hwnd, GWL_STYLE, longPtr | WS_SIZEBOX);
-            SetWindowPos(*(HWND*)hwnd, HWND_NOTOPMOST,
-                0, 0, wndRect.right + frameSize, wndRect.bottom + frameSize + captionSize,
-                SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
-        }
-        int theme;
-        if (LauncherSettingGet("theme", theme)) {
-            const char* userThemeName;
-            if (LauncherSettingGet("theme_user", userThemeName))
-                SetTheme(theme, utf8_to_utf16(userThemeName).c_str());
-            else
-                SetTheme(theme);
-        } else
-            ImGui::StyleColorsDark();
-    } else
-        ::ImGui::StyleColorsDark();
+    Gui::LocaleSet((Gui::locale_t)settings.language);
+    if (settings.resizable_window && !Gui::ImplWin32CheckFullScreen()) {
+        RECT wndRect;
+        GetClientRect(*(HWND*)hwnd, &wndRect);
+        auto frameSize = GetSystemMetrics(SM_CXSIZEFRAME) * 2;
+        auto captionSize = GetSystemMetrics(SM_CYCAPTION);
+        auto longPtr = GetWindowLongW(*(HWND*)hwnd, GWL_STYLE);
+        SetWindowLongW(*(HWND*)hwnd, GWL_STYLE, longPtr | WS_SIZEBOX);
+        SetWindowPos(*(HWND*)hwnd, HWND_NOTOPMOST,
+            0, 0, wndRect.right + frameSize, wndRect.bottom + frameSize + captionSize,
+            SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
+    }
+    SetTheme(settings.theme, settings.theme_user.c_str());
     // Imgui settings
     io.IniFilename = nullptr;
 }

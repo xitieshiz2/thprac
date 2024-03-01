@@ -1,7 +1,5 @@
 #include "thprac_utils.h"
 #include "thprac_licence.h"
-#include "thprac_launcher_main.h"
-#include "thprac_launcher_cfg.h"
 #include <metrohash128.h>
 #include "../3rdParties/d3d8/include/d3d8.h"
 
@@ -259,6 +257,30 @@ DWORD WINAPI CheckDLLFunction(const wchar_t* path, const char* funcName)
     }
 
     return true;
+}
+
+bool JsonEvalBool(rapidjson::Value& val) {
+    switch (val.GetType()) {
+    case rapidjson::kFalseType:
+    case rapidjson::kNullType:
+        return false;
+    case rapidjson::kObjectType:
+        return val.GetObjectW().MemberCount();
+    case rapidjson::kArrayType:
+        return val.GetArray().Size();
+    case rapidjson::kNumberType:
+        if (val.IsInt64()) {
+            return val.GetInt64();
+        } else if (val.IsUint64()) {
+            return val.GetUint64();
+        } else if (val.IsDouble()) {
+            return val.GetDouble();
+        } else {
+            return false;
+        }
+    case rapidjson::kStringType:
+        return val.GetStringLength();
+    }
 }
 
 }

@@ -37,7 +37,7 @@ struct MappedFile {
     size_t fileSize = 0;
     void* fileMapView = nullptr;
 
-    MappedFile(const wchar_t* fn, size_t max_size = -1)
+    MappedFile(const wchar_t* const fn, size_t max_size = -1)
     {
         hFile = CreateFileW(fn, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
         if (hFile == INVALID_HANDLE_VALUE) {
@@ -122,14 +122,6 @@ std::string GetUnifiedPath(const std::string& path);
 std::wstring GetUnifiedPath(const std::wstring& path);
 #pragma endregion
 
-template <typename T>
-static std::function<T(void)> GetRndGenerator(T min, T max, std::mt19937::result_type seed = 0)
-{
-    if (!seed) {
-        seed = (std::mt19937::result_type)time(0);
-    }
-    auto dice_rand = std::bind(std::uniform_int_distribution<T>(min, max), std::mt19937(seed));
-    return dice_rand;
-}
 DWORD WINAPI CheckDLLFunction(const wchar_t* path, const char* funcName);
+bool JsonEvalBool(rapidjson::Value& val);
 }

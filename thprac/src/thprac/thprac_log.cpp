@@ -1,7 +1,6 @@
 #include <Windows.h>
 #include <Shlwapi.h>
 #include "thprac_log.h"
-#include "thprac_launcher_cfg.h"
 
 namespace THPrac {
 
@@ -18,6 +17,7 @@ void log_print(const char* msg, size_t len)
         WriteFile(hLog, msg, len, &byteRet, nullptr);
     }
 }
+
 
 void log_init(bool launcher, bool console)
 {

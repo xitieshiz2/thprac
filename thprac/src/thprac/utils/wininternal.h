@@ -1,13 +1,18 @@
 #pragma once
 
+#include <stdint.h>
+
 #define read_fs_byte(offset) __readfsbyte(offset)
 #define read_fs_word(offset) __readfsword(offset)
 #define read_fs_dword(offset) __readfsdword(offset)
 #define write_fs_byte(offset, data) __writefsbyte(offset, data)
 #define write_fs_word(offset, data) __writefsword(offset, data)
 #define write_fs_dword(offset, data) __writefsdword(offset, data)
+#define member_size(type, member) sizeof(((type*)0)->member)
 
 #include <Windows.h>
+
+#define UNICODE_STRING_LENGTH(a) ((wchar_t*)((UINT_PTR)a.Buffer + a.Length) - a.Buffer)
 
 /// Internal Windows Structs
 /// Copied from thcrap
@@ -20,6 +25,59 @@ PEB: https://www.geoffchappell.com/studies/windows/km/ntoskrnl/inc/api/pebteb/pe
 Rest in Peace:
 Geoff Chappell
 */
+typedef struct _CLIENT_ID {
+    HANDLE UniqueProcess;
+    HANDLE UniqueThread;
+} CLIENT_ID;
+
+typedef struct _GDI_TEB_BATCH {
+    ULONG Offset;
+    ULONG_PTR HDC;
+    ULONG Buffer[310];
+} GDI_TEB_BATCH, *PGDI_TEB_BATCH;
+
+typedef struct _UNICODE_STRING {
+    USHORT Length;
+    USHORT MaximumLength;
+    PWSTR Buffer;
+} UNICODE_STRING, *PUNICODE_STRING;
+
+typedef struct _CURDIR CURDIR;
+struct _CURDIR {
+    UNICODE_STRING DosPath;
+    HANDLE Handle;
+};
+
+typedef struct _RTL_USER_PROCESS_PARAMETERS RTL_USER_PROCESS_PARAMETERS;
+struct _RTL_USER_PROCESS_PARAMETERS {
+    ULONG MaximumLength;
+    ULONG Length;
+    ULONG Flags;
+    ULONG DebugFlags;
+    HANDLE ConsoleHandle;
+    ULONG ConsoleFlags;
+    HANDLE StandardInput;
+    HANDLE StandardOutput;
+    HANDLE StandardError;
+    CURDIR CurrentDirectory;
+    UNICODE_STRING DllPath;
+    UNICODE_STRING ImagePathName;
+    UNICODE_STRING CommandLine;
+    PVOID Environment;
+    ULONG StartingX;
+    ULONG StartingY;
+    ULONG CountX;
+    ULONG CountY;
+    ULONG CountCharsX;
+    ULONG CountCharsY;
+    ULONG FillAttribute;
+    ULONG WindowFlags;
+    ULONG ShowWindowFlags;
+    UNICODE_STRING WindowTitle;
+    UNICODE_STRING DesktopInfo;
+    UNICODE_STRING ShellInfo;
+    UNICODE_STRING RuntimeData;
+};
 
 typedef struct _PEB PEB;
 struct _PEB {
@@ -33,7 +91,7 @@ struct _PEB {
     HANDLE Mutant;
     PVOID ImageBaseAddress;
     PVOID Ldr; // PEB_LDR_DATA*
-    PVOID ProcessParameters; // RTL_USER_PROCESS_PARAMETERS*
+    RTL_USER_PROCESS_PARAMETERS* ProcessParameters; // RTL_USER_PROCESS_PARAMETERS*
     PVOID SubSystemData;
     HANDLE ProcessHeap;
     RTL_CRITICAL_SECTION* FastPebLock;
@@ -107,20 +165,6 @@ struct _PEB {
     UCHAR Padding5[4];
 #endif
 };
-typedef struct _CLIENT_ID {
-    HANDLE UniqueProcess;
-    HANDLE UniqueThread;
-} CLIENT_ID;
-typedef struct _GDI_TEB_BATCH {
-    ULONG Offset;
-    ULONG_PTR HDC;
-    ULONG Buffer[310];
-} GDI_TEB_BATCH, *PGDI_TEB_BATCH;
-typedef struct _UNICODE_STRING {
-    USHORT Length;
-    USHORT MaximumLength;
-    PWSTR Buffer;
-} UNICODE_STRING, *PUNICODE_STRING;
 typedef struct _TEB TEB;
 struct _TEB {
     // NT_TIB NtTib;
@@ -186,13 +230,16 @@ struct _TEB {
     HANDLE DbgSsReserved[2];
 };
 
-#define read_teb_member(member) (                                                                                                             \
-    member_size(TEB, member) == 1 ? read_fs_byte(offsetof(TEB, member)) : member_size(TEB, member) == 2 ? read_fs_word(offsetof(TEB, member)) \
-                                                                                                        : read_fs_dword(offsetof(TEB, member)))
+#define read_teb_member(member) (\
+member_size(TEB, member) == 1 ? read_fs_byte(offsetof(TEB, member)) : \
+member_size(TEB, member) == 2 ? read_fs_word(offsetof(TEB, member)) : \
+read_fs_dword(offsetof(TEB, member)) \
+)
 #define write_teb_member(member, data) (\
 member_size(TEB, member) == 1 ? write_fs_byte(offsetof(TEB, member), (data)) : \
 member_size(TEB, member) == 2 ? write_fs_word(offsetof(TEB, member), (data)) : \
 write_fs_dword(offsetof(TEB, member), (data)) \
+)
 
 #define CurrentTeb() ((TEB*)read_teb_member(Self))
 #define CurrentPeb() ((PEB*)read_teb_member(ProcessEnvironmentBlock))

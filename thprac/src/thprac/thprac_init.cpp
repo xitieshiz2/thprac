@@ -3,8 +3,8 @@
 
 #include "thprac_init.h"
 #include "thprac_games.h"
-#include "thprac_launcher_games.h"
 #include "thprac_load_exe.h"
+#include "thprac_games_def.h"
 #include <Windows.h>
 #include <imgui.h>
 #include <metrohash128.h>

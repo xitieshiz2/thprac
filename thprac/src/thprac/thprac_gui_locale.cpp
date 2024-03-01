@@ -1,10 +1,11 @@
 ﻿#include "thprac_gui_locale.h"
-#include "thprac_launcher_cfg.h"
 #include <imgui.h>
 #include <imgui_freetype.h>
 
 #define NOMINMAX
 #include <Windows.h>
+
+#include <string>
 
 namespace THPrac {
 namespace Gui {
@@ -127,7 +128,7 @@ static ImWchar baseUnicodeRanges[] =
             io.FontDefault = io.Fonts->Fonts[__glocale_current];
         }
     }
-    void LocaleAutoSet()
+    locale_t LocaleAutoSet()
     {
         auto lang_id = GetUserDefaultUILanguage();
         switch (lang_id & 0x03ff) {
@@ -144,6 +145,7 @@ static ImWchar baseUnicodeRanges[] =
             __glocale_current = LOCALE_EN_US;
             break;
         }
+        return __glocale_current;
     }
     inline const char** LocaleGetCurrentGlossary();
     inline const char* LocaleGetStr(th_glossary_t name);
@@ -163,16 +165,6 @@ static ImWchar baseUnicodeRanges[] =
             break;
         }
     }
-    bool LocaleInitFromCfg()
-    {
-        int language = 0;
-        if (LauncherSettingGet("language", language) && language >= 0 && language <= 2) {
-            __glocale_current = (Gui::locale_t)language;
-            return true;
-        }
-        return false;
-    }
-
     struct font_info {
         const wchar_t* font_name;
         int font_index;

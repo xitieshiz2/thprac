@@ -11,7 +11,7 @@ namespace Gui {
     };
 
     void LocaleSet(locale_t locale);
-    void LocaleAutoSet();
+    locale_t LocaleAutoSet();
     extern locale_t __glocale_current;
     __forceinline locale_t LocaleGet()
     {

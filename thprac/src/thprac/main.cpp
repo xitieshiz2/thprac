@@ -1,11 +1,10 @@
 ﻿#define NOMINMAX
 
 #include "thprac_init.h"
-#include "thprac_launcher_main.h"
-#include "thprac_launcher_cfg.h"
 #include "thprac_main.h"
 #include "thprac_gui_locale.h"
 #include "thprac_hook.h"
+#include "thprac_cfg.h"
 #include <Windows.h>
 #include <psapi.h>
 #include <tlhelp32.h>
@@ -35,32 +34,13 @@ int WINAPI wWinMain(
     PWSTR pCmdLine,
     [[maybe_unused]] int nCmdShow
 ) {
+    CfgSettingsInit();
     HookCtx::VEHInit();
-    if (LauncherPreUpdate(pCmdLine)) {
-        return 0;
-    }
 
     RemoteInit();
     auto thpracMutex = OpenMutexW(SYNCHRONIZE, FALSE, L"thprac - Touhou Practice Tool##mutex");
 
-    int launchBehavior = 0;
-    bool dontFindOngoingGame = false;
-    bool adminRights = false;
-    int checkUpdateWhen = 0;
-    bool autoUpdate = false;
-    if (LauncherCfgInit(true)) {
-        if (!Gui::LocaleInitFromCfg()) {
-            Gui::LocaleAutoSet();
-        }
-        LauncherSettingGet("existing_game_launch_action", launchBehavior);
-        LauncherSettingGet("dont_search_ongoing_game", dontFindOngoingGame);
-        LauncherSettingGet("thprac_admin_rights", adminRights);
-        LauncherSettingGet("check_update_timing", checkUpdateWhen);
-        LauncherSettingGet("update_without_confirmation", autoUpdate);
-        LauncherCfgClose();
-    }
-
-    if (adminRights && !PrivilegeCheck()) {
+    if (settings.thprac_admin_rights && !PrivilegeCheck()) {
         wchar_t exePath[MAX_PATH];
         GetModuleFileNameW(nullptr, exePath, MAX_PATH);
         CloseHandle(thpracMutex);
@@ -68,25 +48,22 @@ int WINAPI wWinMain(
         return 0;
     }
 
-    if (checkUpdateWhen == 1) {
-        if (LauncherUpdDialog(autoUpdate)) {
-            return 0;
-        }
+    if (settings.check_update_timing == CheckUpdate::Always) {
+        MessageBoxW(NULL, L"updates are not implemented", L"Placeholder", MB_ICONINFORMATION);
     }
 
-    if (!dontFindOngoingGame && FindOngoingGame()) {
+    if (!settings.dont_search_ongoing_game && FindOngoingGame()) {
         return 0;
     }
 
-    if (launchBehavior != 1 && FindAndRunGame(launchBehavior == 2)) {
+    if (settings.existing_game_launch_action != ExistingGameLaunchAction::LauncherAlways
+        && FindAndRunGame(settings.existing_game_launch_action == ExistingGameLaunchAction::AlwaysAsk)) {
         return 0;
     }
 
-    if (checkUpdateWhen == 0 && autoUpdate) {
-        if (LauncherUpdDialog(autoUpdate)) {
-            return 0;
-        }
+    if (settings.check_update_timing == CheckUpdate::Always && settings.update_without_confirmation) {
+        MessageBoxW(NULL, L"updates are not implemented", L"Placeholder", MB_ICONINFORMATION);
     }
 
-    return GuiLauncherMain();
+    return MessageBoxW(NULL, L"no launcher", L"Placeholder", MB_ICONINFORMATION);
 }

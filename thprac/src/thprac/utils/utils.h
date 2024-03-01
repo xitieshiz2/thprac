@@ -77,3 +77,24 @@ privDefer<F> defer_func(F f)
 #define defer(code) auto DEFER_3(_defer_) = defer_func([&]() { code; })
 
 #define elementsof(a) (sizeof(a) / sizeof(a[0]))
+
+template<typename T>
+constexpr unsigned int constexpr_strlen(const T* const str, T term = 0)
+{
+    unsigned int i = 0;
+    for (; str[i] != term; i++)
+        ;
+    return i;
+}
+
+/** round n down to nearest multiple of m */
+inline long RoundDown(long n, long m)
+{
+    return n >= 0 ? (n / m) * m : ((n - m + 1) / m) * m;
+}
+
+/** round n up to nearest multiple of m */
+inline long RoundUp(long n, long m)
+{
+    return n >= 0 ? ((n + m - 1) / m) * m : (n / m) * m;
+}
