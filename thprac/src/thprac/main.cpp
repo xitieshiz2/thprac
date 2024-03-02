@@ -5,6 +5,8 @@
 #include "thprac_gui_locale.h"
 #include "thprac_hook.h"
 #include "thprac_cfg.h"
+#include "thprac_launcher_main.h"
+#include "thprac_log.h"
 #include <Windows.h>
 #include <psapi.h>
 #include <tlhelp32.h>
@@ -28,7 +30,7 @@ bool PrivilegeCheck()
     return fRet;
 }
 
-int WINAPI wWinMain(
+static int WINAPI wWinMain(
     [[maybe_unused]] HINSTANCE hInstance,
     [[maybe_unused]] HINSTANCE hPrevInstance,
     PWSTR pCmdLine,
@@ -38,6 +40,7 @@ int WINAPI wWinMain(
     HookCtx::VEHInit();
 
     RemoteInit();
+    log_init(true, settings.console_launcher);
     auto thpracMutex = OpenMutexW(SYNCHRONIZE, FALSE, L"thprac - Touhou Practice Tool##mutex");
 
     if (settings.thprac_admin_rights && !PrivilegeCheck()) {
@@ -65,5 +68,5 @@ int WINAPI wWinMain(
         MessageBoxW(NULL, L"updates are not implemented", L"Placeholder", MB_ICONINFORMATION);
     }
 
-    return MessageBoxW(NULL, L"no launcher", L"Placeholder", MB_ICONINFORMATION);
+    return GuiLauncherMain(hInstance, nCmdShow);
 }

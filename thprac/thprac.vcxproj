@@ -58,6 +58,7 @@
     <ClInclude Include="src\thprac\thprac_gui_impl_win32.h" />
     <ClInclude Include="src\thprac\thprac_init.h" />
     <ClInclude Include="src\thprac\thprac_gui_input.h" />
+    <ClInclude Include="src\thprac\thprac_launcher_main.h" />
     <ClInclude Include="src\thprac\thprac_licence.h" />
     <ClInclude Include="src\thprac\thprac_load_exe.h" />
     <ClInclude Include="src\thprac\thprac_gui_locale.h" />
@@ -105,6 +106,7 @@
     <ClCompile Include="src\thprac\thprac_gui_impl_win32.cpp" />
     <ClCompile Include="src\thprac\thprac_init.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_input.cpp" />
+    <ClCompile Include="src\thprac\thprac_launcher_main.cpp" />
     <ClCompile Include="src\thprac\thprac_licence.cpp" />
     <ClCompile Include="src\thprac\thprac_load_exe.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_locale.cpp" />
