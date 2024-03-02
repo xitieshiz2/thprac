@@ -77,11 +77,13 @@ struct Settings {
     bool thprac_admin_rights = false;
     bool use_relative_path = false;
     bool update_without_confirmation = false;
+    bool console_launcher = false;
+    bool console_ingame = false;
 };
 
 extern Settings settings;
 
 void CfgSettingsInit();
-bool SetTheme(Theme theme, const wchar_t* theme_user);
+void SetTheme(Theme theme, const wchar_t* theme_user);
 
 }

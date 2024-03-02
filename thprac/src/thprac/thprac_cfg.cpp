@@ -13,18 +13,18 @@ Settings settings;
 std::wstring gDataDir;
 rapidjson::Document gCfg;
 
-bool SetTheme(Theme themeId, const wchar_t* userThemeName)
+void SetTheme(Theme themeId, const wchar_t* userThemeName)
 {
     switch (themeId) {
     case Theme::Dark:
         ImGui::StyleColorsDark();
-        return false;
+        return;
     case Theme::Light:
         ImGui::StyleColorsLight();
-        return false;
+        return;
     case Theme::Classic:
         ImGui::StyleColorsClassic();
-        return false;
+        return;
     default:
         // Do nothing
         break;
@@ -32,7 +32,8 @@ bool SetTheme(Theme themeId, const wchar_t* userThemeName)
 
     if (userThemeName == nullptr) {
         ImGui::StyleColorsDark();
-        return true; // TODO: Should we return false instead?
+        settings.theme = Theme::Dark;
+        return;
     }
 
     auto filename = std::format(L"{}\\themes\\{}", gDataDir, userThemeName);
@@ -136,10 +137,9 @@ bool SetTheme(Theme themeId, const wchar_t* userThemeName)
         err_desc.append(filename).append(L"\r\n").append(utf8_to_utf16(err.what()));
         MessageBoxW(nullptr, err_desc.c_str(), L"Failed to load theme", MB_ICONERROR);
         ImGui::StyleColorsDark();
+        settings.theme = Theme::Dark;
         // TODO: Should we return false at this point?
     }
-
-    return true;
 }
 
 void CfgInitDataDir() {
@@ -247,7 +247,6 @@ void CfgSettingsInit() {
         settings.language = (Language)Gui::LocaleAutoSet();
     }
 
-
 #define B(a) if (settingsJson.HasMember(#a)) settings.a = JsonEvalBool(settingsJson[#a])
     B(always_open_launcher);
     B(auto_default_launch);
@@ -258,7 +257,21 @@ void CfgSettingsInit() {
     B(thprac_admin_rights);
     B(use_relative_path);
     B(update_without_confirmation);
+    B(console_launcher);
+    B(console_ingame);
 #undef B
+
+#define S(a) if (settingsJson.HasMember(#a) && settingsJson[#a].IsString()) settings.a = utf8_to_utf16(settingsJson[#a].GetString());
+
+    S(theme_user);
+    S(thcrap);
+
+    if (settings.theme < Theme::User) {
+        settings.theme_user = L"";
+    }
+    if (!settings.theme_user.length() && settings.theme == Theme::User) {
+        settings.theme_user = L"";
+    }
 }
 
 void CfgWrite() {

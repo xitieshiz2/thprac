@@ -5,6 +5,8 @@
 #include "thprac_games.h"
 #include "thprac_load_exe.h"
 #include "thprac_games_def.h"
+#include "thprac_log.h"
+#include "thprac_cfg.h"
 #include <Windows.h>
 #include <imgui.h>
 #include <metrohash128.h>
@@ -35,6 +37,7 @@ void RemoteInit()
             continue;
         }
         if (gameDef.initFunc) {
+            log_init(false, settings.console_ingame);
             gameDef.initFunc();
         }
         break;
